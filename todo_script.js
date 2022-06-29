@@ -6,6 +6,9 @@ const $ActivityButton = $('#new-activity-button');
 const $DrawString = $('#todo-body-list');
 
 const todos = [];
+let all_count = 0;
+let complete_count = 0;
+let active_count = 0;
 
 
 
@@ -55,6 +58,8 @@ $ActivityButton.on('click', () => {
         todos_status: false
     })
     draw_list();
+    todo_counter();
+    
 });
 
 
@@ -68,6 +73,7 @@ $DrawString.on('click', '.Destroy', function() {
     }
     $(this).closest('li').remove();
     draw_list();
+    todo_counter();
 });
 
 $DrawString.on('click', '.toggle', function() {
@@ -81,6 +87,7 @@ $DrawString.on('click', '.toggle', function() {
             }
         }
         $(this).closest('li').css('textDecoration', 'line-through');
+        todo_counter();
     }
     else {
         for (let i = 0; i < todos.length; i++)
@@ -90,6 +97,7 @@ $DrawString.on('click', '.toggle', function() {
             }
         }
         $(this).closest('li').css('textDecoration', 'none');
+        todo_counter();
     }
     // const a = $(this).closest('li').attr('id');
     // console.log(a);
@@ -98,3 +106,18 @@ $DrawString.on('click', '.toggle', function() {
     //     console.log(a);
     // }
 });
+
+function todo_counter(){
+    active_count = todos.filter((status) => {
+        return status.todos_status == false;
+    }).length;
+    complete_count = todos.filter((status) => {
+        return status.todos_status == true;
+    }).length;
+    all_count = todos.length;
+    console.log(`all: ${all_count} , complete: ${complete_count} , active: ${active_count}`);
+
+    $('.todo-all-count').html(`All: ${all_count};`);
+    $('.todo-completed-count').html(`Completed: ${complete_count};`);
+    $('.todo-active-count').html(`Active: ${active_count};`);
+}
