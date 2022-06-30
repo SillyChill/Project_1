@@ -4,8 +4,23 @@
 const $ActivityInput = $('#activity-input');
 const $ActivityButton = $('#new-activity-button');
 const $DrawString = $('#todo-body-list');
+const $TodoAll = $('.todo-all-button');
+const $TodoActive = $('.todo-active-button');
+const $TodoCompleted = $('.todo-completed-button');
+let draw_status = 'All';
+const todos = [
+    {
+        todos_id: 12321321312323,
+        todos_text: 'asdadas',
+        todos_status: false
+    },
+    {
+        todos_id: 124214124125125,
+        todos_text: 'asdasdafwef',
+        todos_status: true
+    }
 
-const todos = [];
+];
 let all_count = 0;
 let complete_count = 0;
 let active_count = 0;
@@ -14,15 +29,7 @@ let active_count = 0;
 
 function draw_list() {
     let DrawStr = '';
-    todos.forEach(element => {
-        // DrawStr += `
-        // <div>
-        //     <li id="${element.todos_id}">
-        //         <input class="toggle" type="checkbox">    
-        //         <label> ${element.todos_text} </label>
-        //         <button class="Destroy"> X </button>
-        //     </li>
-        // </div>`
+    newArray(draw_status).forEach(element => {
         if (element.todos_status == true) {
             DrawStr += `
             <div>
@@ -46,10 +53,11 @@ function draw_list() {
         }
     })
     $DrawString.html(DrawStr);
-    
-
+    todo_counter();
+    newArray();
 }
 
+$(document).ready (draw_list());
 
 $ActivityButton.on('click', () => {
     todos.push ({
@@ -99,12 +107,7 @@ $DrawString.on('click', '.toggle', function() {
         $(this).closest('li').css('textDecoration', 'none');
         todo_counter();
     }
-    // const a = $(this).closest('li').attr('id');
-    // console.log(a);
-    // if ($(this).is(':checked')) {
-    //     const a = $(this).closest('li').attr('id');
-    //     console.log(a);
-    // }
+    
 });
 
 function todo_counter(){
@@ -115,9 +118,48 @@ function todo_counter(){
         return status.todos_status == true;
     }).length;
     all_count = todos.length;
-    console.log(`all: ${all_count} , complete: ${complete_count} , active: ${active_count}`);
+    // console.log(`all: ${all_count} , complete: ${complete_count} , active: ${active_count}`);
 
     $('.todo-all-count').html(`All: ${all_count};`);
     $('.todo-completed-count').html(`Completed: ${complete_count};`);
     $('.todo-active-count').html(`Active: ${active_count};`);
 }
+
+
+function newArray(draw_status){
+    let newArr = [];
+    switch(draw_status){
+        case 'All':
+            newArr = todos;
+            break;
+        case 'Active':
+            newArr = todos.filter(item => item.todos_status == false);
+            break;
+        case 'Completed':
+            newArr = todos.filter(item => item.todos_status == true);
+            break;
+        default:
+            return newArr; 
+    }
+    // console.log(newArr);
+    return newArr;
+}
+
+$TodoAll.on('click', () => {
+    draw_status = 'All';
+    newArray(draw_status);
+    draw_list();
+});
+
+$TodoActive.on('click', () => {
+    draw_status = 'Active';
+    newArray(draw_status);
+    draw_list();
+});
+
+$TodoCompleted.on('click', () => {
+    draw_status = 'Completed';
+    newArray(draw_status);
+    draw_list();
+});
+
