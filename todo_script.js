@@ -96,6 +96,8 @@ $DrawString.on('click', '.toggle', function() {
         }
         $(this).closest('li').css('textDecoration', 'line-through');
         todo_counter();
+        newArray(draw_status);
+        draw_list();
     }
     else {
         for (let i = 0; i < todos.length; i++)
@@ -106,6 +108,8 @@ $DrawString.on('click', '.toggle', function() {
         }
         $(this).closest('li').css('textDecoration', 'none');
         todo_counter();
+        newArray(draw_status);
+        draw_list();
     }
     
 });
