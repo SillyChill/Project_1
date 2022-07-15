@@ -7,7 +7,11 @@ const $DrawString = $('#todo-body-list');
 const $TodoAll = $('.todo-all-button');
 const $TodoActive = $('.todo-active-button');
 const $TodoCompleted = $('.todo-completed-button');
+const $TodoPageNumber = $('.todo-page-numbers');
 let draw_status = 'All';
+let quantity_selection = 5;
+let newArr = [];
+let paginator_page = [];
 const todos = [
     {
         todos_id: 12321321312323,
@@ -24,12 +28,13 @@ const todos = [
 let all_count = 0;
 let complete_count = 0;
 let active_count = 0;
+let button_number = 1;
 
 
 
 function draw_list() {
     let DrawStr = '';
-    newArray(draw_status).forEach(element => {
+    newArray(draw_status , button_number).forEach(element => {
         if (element.todos_status == true) {
             DrawStr += `
             <div>
@@ -54,7 +59,7 @@ function draw_list() {
     })
     $DrawString.html(DrawStr);
     todo_counter();
-    newArray();
+    newArray(draw_status , button_number);
 }
 
 $(document).ready (draw_list());
@@ -96,7 +101,7 @@ $DrawString.on('click', '.toggle', function() {
         }
         $(this).closest('li').css('textDecoration', 'line-through');
         todo_counter();
-        newArray(draw_status);
+        newArray(draw_status , button_number);
         draw_list();
     }
     else {
@@ -108,7 +113,7 @@ $DrawString.on('click', '.toggle', function() {
         }
         $(this).closest('li').css('textDecoration', 'none');
         todo_counter();
-        newArray(draw_status);
+        newArray(draw_status , button_number);
         draw_list();
     }
     
@@ -130,17 +135,33 @@ function todo_counter(){
 }
 
 
-function newArray(draw_status){
-    let newArr = [];
+function newArray(draw_status , button_number){
+    newArr = [];
+    paginator_page = [];
     switch(draw_status){
         case 'All':
-            newArr = todos;
+            newArr = todos.slice(quantity_selection * (button_number - 1) , quantity_selection * button_number);
+            $TodoAll.css('background-color', 'silver');
+            $TodoActive.css('background-color', '#DDDDDD');
+            $TodoCompleted.css('background-color', '#DDDDDD');
+            paginator_page = todos;
+            draw_pagination_button(newArr);
             break;
         case 'Active':
-            newArr = todos.filter(item => item.todos_status == false);
+            newArr = todos.filter(item => item.todos_status == false).slice(quantity_selection * (button_number - 1) , quantity_selection * button_number);
+            $TodoAll.css('background-color', '#DDDDDD');
+            $TodoActive.css('background-color', 'silver');
+            $TodoCompleted.css('background-color', '#DDDDDD');
+            paginator_page = todos.filter(item => item.todos_status == false);
+            draw_pagination_button(newArr);
             break;
         case 'Completed':
-            newArr = todos.filter(item => item.todos_status == true);
+            newArr = todos.filter(item => item.todos_status == true).slice(quantity_selection * (button_number - 1) , quantity_selection * button_number);
+            $TodoAll.css('background-color', '#DDDDDD');
+            $TodoActive.css('background-color', '#DDDDDD');
+            $TodoCompleted.css('background-color', 'silver');
+            paginator_page = todos.filter(item => item.todos_status == true);
+            draw_pagination_button(newArr);
             break;
         default:
             return newArr; 
@@ -151,19 +172,62 @@ function newArray(draw_status){
 
 $TodoAll.on('click', () => {
     draw_status = 'All';
-    newArray(draw_status);
+    button_number = 1;
+    newArray(draw_status , button_number);
     draw_list();
 });
 
 $TodoActive.on('click', () => {
     draw_status = 'Active';
-    newArray(draw_status);
+    button_number = 1;
+    newArray(draw_status , button_number);
     draw_list();
 });
 
 $TodoCompleted.on('click', () => {
     draw_status = 'Completed';
-    newArray(draw_status);
+    button_number = 1;
+    newArray(draw_status , button_number);
     draw_list();
 });
 
+function draw_pagination_button(newArr){
+    if (paginator_page.length > quantity_selection){
+        let number_of_pages = Math.ceil(paginator_page.length / quantity_selection);
+        let nop_button = '';
+        for (let i = 1; i < number_of_pages + 1; i++){
+            nop_button += `<button class="pb">${i}</button>`;
+        }
+        $TodoPageNumber.html(nop_button);
+        return nop_button;
+    }
+    else {
+        let nop_button = '';
+        $TodoPageNumber.html(nop_button);
+        return nop_button;
+    }
+    
+    // let number_of_pages = Math.ceil(paginator_page.length / quantity_selection);
+    //     let nop_button = '';
+    //     // console.log(number_of_pages);
+    //     for (let i = 1; i < number_of_pages + 1; i++){
+    //         nop_button += `<button class="pb">${i}</button>`;
+    //     }
+    //     // console.log (nop_button);
+    //     $TodoPageNumber.html(nop_button);
+};
+
+$TodoPageNumber.on('click', function(event) {
+    if ([...event.target.classList].includes('pb')){
+        button_number = event.target.textContent;
+        newArray(draw_status , button_number);
+        draw_list();
+        // let start = quantity_selection * (button_number - 1);
+        // let end = quantity_selection * button_number;
+        // newArr = paginator_page;
+        // let pagination_list = newArr.slice(start, end);
+        // console.log (pagination_list);
+        
+
+    }
+});
