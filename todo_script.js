@@ -38,23 +38,45 @@ function draw_list() {
         if (element.todos_status == true) {
             DrawStr += `
             <div>
-                <li id="${element.todos_id}" style= "text-decoration: line-through;">
-                    <input class="toggle" type="checkbox" checked>    
-                    <label> ${element.todos_text} </label>
-                    <button class="Destroy"> X </button>
+                <li id="${element.todos_id}" >
+                    <div class="view" style="text-decoration: line-through;">
+                        <input class="toggle" type="checkbox" checked>    
+                        <label> ${element.todos_text} </label>
+                        <button class="Destroy"> X </button>
+                    </div>
+                    <input type="text" value="${element.todos_text}" style="display: none">
                 </li>
             </div>`
+            // DrawStr += `
+            // <div>
+            //     <li id="${element.todos_id}" style= "text-decoration: line-through;">
+            //         <input class="toggle" type="checkbox" checked>    
+            //         <label> ${element.todos_text} </label>
+            //         <button class="Destroy"> X </button>
+            //     </li>
+            // </div>`
             
         }
         else {
             DrawStr += `
             <div>
-                <li id="${element.todos_id}" style= "text-decoration: none;">
-                    <input class="toggle" type="checkbox">    
-                    <label> ${element.todos_text} </label>
-                    <button class="Destroy"> X </button>
+                <li id="${element.todos_id}" >
+                    <div class="view" style="text-decoration: none;">
+                        <input class="toggle" type="checkbox">    
+                        <label> ${element.todos_text} </label>
+                        <button class="Destroy"> X </button>
+                    </div>
+                    <input type="text" value="${element.todos_text}" style="display: none">
                 </li>
             </div>`
+            // DrawStr += `
+            // <div>
+            //     <li id="${element.todos_id}" style= "text-decoration: none;">
+            //         <input class="toggle" type="checkbox">    
+            //         <label> ${element.todos_text} </label>
+            //         <button class="Destroy"> X </button>
+            //     </li>
+            // </div>`
         }
     })
     $DrawString.html(DrawStr);
@@ -99,7 +121,7 @@ $DrawString.on('click', '.toggle', function() {
                 todos[i].todos_status = true;
             }
         }
-        $(this).closest('li').css('textDecoration', 'line-through');
+        $(this).closest('.view').css('textDecoration', 'line-through');
         todo_counter();
         newArray(draw_status , button_number);
         draw_list();
@@ -111,7 +133,7 @@ $DrawString.on('click', '.toggle', function() {
                 todos[i].todos_status = false;
             }
         }
-        $(this).closest('li').css('textDecoration', 'none');
+        $(this).closest('.view').css('textDecoration', 'none');
         todo_counter();
         newArray(draw_status , button_number);
         draw_list();
@@ -206,15 +228,7 @@ function draw_pagination_button(newArr){
         $TodoPageNumber.html(nop_button);
         return nop_button;
     }
-    
-    // let number_of_pages = Math.ceil(paginator_page.length / quantity_selection);
-    //     let nop_button = '';
-    //     // console.log(number_of_pages);
-    //     for (let i = 1; i < number_of_pages + 1; i++){
-    //         nop_button += `<button class="pb">${i}</button>`;
-    //     }
-    //     // console.log (nop_button);
-    //     $TodoPageNumber.html(nop_button);
+
 };
 
 $TodoPageNumber.on('click', function(event) {
@@ -222,12 +236,35 @@ $TodoPageNumber.on('click', function(event) {
         button_number = event.target.textContent;
         newArray(draw_status , button_number);
         draw_list();
-        // let start = quantity_selection * (button_number - 1);
-        // let end = quantity_selection * button_number;
-        // newArr = paginator_page;
-        // let pagination_list = newArr.slice(start, end);
-        // console.log (pagination_list);
-        
-
     }
+});
+
+$DrawString.on('dblclick', '.view', function(){
+    let input_val = '';
+    // let editArray = todos; 
+    let a = $(this).closest('li').attr('id');
+    $(this).closest('li').children('input').css('display', 'block');
+    $(this).closest('li').children('input').focus();
+    $(this).closest('li').children('.view').css('display', 'none');
+    
+    // console.log($(this).closest('li').children('input').attr('value'));
+    if ($(this).closest('li').children('input').blur(function(){
+        input_val = $(this).closest('li').children('input').val();
+        
+        todos.forEach((editArray) => editArray.todos_id == a ? editArray.todos_text = `${input_val}` : editArray.todos_text = editArray.todos_text)
+        // for (let i = 0; i < editArray.length; i++){
+        //     if (a == editArray[i].todos_id){
+        //         editArray[i].todos_text = `${input_val}`;
+        //     } else {
+        //         editArray[i].todos_text = editArray[i].todos_text;
+        //     }
+        // }
+        console.log(todos);
+        newArray();
+        draw_list();
+        $(this).closest('li').children('input').css('display', 'none');
+        $(this).closest('li').children('.view').css('display', 'block');
+        
+        console.log(input_val);
+    }));
 });
